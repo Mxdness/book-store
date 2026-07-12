@@ -1,5 +1,6 @@
 package com.sakr.bookstore.controller;
 
+import com.sakr.bookstore.exception.ResourceNotFoundException;
 import com.sakr.bookstore.model.Book;
 import com.sakr.bookstore.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,31 +38,29 @@ public class BookController {
     }
 
     @GetMapping("/isbn/{isbn}")
-    public ResponseEntity<Book> getBookByIsbn(@PathVariable String isbn) {
+    public Book getBookByIsbn(@PathVariable String isbn) {
         return bookRepository.findByIsbn(isbn)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with ISBN: " + isbn));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id, @Valid@RequestBody Book bookDetails) {
-        return bookRepository.findById(id)
-                .map(existingBook -> {
-                    existingBook.setTitle(bookDetails.getTitle());
-                    existingBook.setAuthor(bookDetails.getAuthor());
-                    existingBook.setIsbn(bookDetails.getIsbn());
-                    existingBook.setPrice(bookDetails.getPrice());
-                    return ResponseEntity.ok(bookRepository.save(existingBook));
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
+    public Book updateBook(@PathVariable Long id, @Valid @RequestBody Book bookDetails) {
+        Book existingBook = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
+
+        existingBook.setTitle(bookDetails.getTitle());
+        existingBook.setAuthor(bookDetails.getAuthor());
+        existingBook.setIsbn(bookDetails.getIsbn());
+        existingBook.setPrice(bookDetails.getPrice());
+
+        return bookRepository.save(existingBook);
+     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
-        if (!bookRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        bookRepository.deleteById(id);
+        Book existingBook = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
+        bookRepository.delete(existingBook);
         return ResponseEntity.noContent().build();
     }
 }

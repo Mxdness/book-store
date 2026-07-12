@@ -1,4 +1,4 @@
-package com.sakr.bookstore.exception;
+package com.sakr.bookstore.exception.response;
 
 import lombok.Getter;
 
