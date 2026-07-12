@@ -5,6 +5,7 @@ import com.sakr.bookstore.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +26,7 @@ public class BookController {
     private final BookRepository bookRepository;
 
     @PostMapping
-    public ResponseEntity<Book> createBook(@RequestBody Book book) {
+    public ResponseEntity<Book> createBook(@Valid@RequestBody Book book) {
         Book savedBook = bookRepository.save(book);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedBook);
     }
@@ -43,7 +44,7 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book bookDetails) {
+    public ResponseEntity<Book> updateBook(@PathVariable Long id, @Valid@RequestBody Book bookDetails) {
         return bookRepository.findById(id)
                 .map(existingBook -> {
                     existingBook.setTitle(bookDetails.getTitle());
