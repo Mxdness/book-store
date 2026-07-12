@@ -45,7 +45,7 @@ public class Book {
     private BigDecimal price;
 
     @NotNull(message = "Author is required")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id", nullable = false)
     private Author author;
 }

@@ -1,7 +1,9 @@
 package com.sakr.bookstore.controller;
 
 import com.sakr.bookstore.exception.ResourceNotFoundException;
+import com.sakr.bookstore.model.Author;
 import com.sakr.bookstore.model.Book;
+import com.sakr.bookstore.repository.AuthorRepository;
 import com.sakr.bookstore.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,10 +27,21 @@ import java.util.List;
 public class BookController {
 
     private final BookRepository bookRepository;
+    private final AuthorRepository authorRepository;
 
     @PostMapping
-    public ResponseEntity<Book> createBook(@Valid@RequestBody Book book) {
+    public ResponseEntity<Book> createBook(@Valid @RequestBody Book book) {
+
+        Long authorId = book.getAuthor().getId();
+
+        Author author = authorRepository.findById(authorId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Author not found with id: " + authorId));
+
+        book.setAuthor(author);
+
         Book savedBook = bookRepository.save(book);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(savedBook);
     }
 
