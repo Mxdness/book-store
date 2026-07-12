@@ -35,6 +35,13 @@ public class BookController {
         return bookRepository.findAll();
     }
 
+    @GetMapping("/isbn/{isbn}")
+    public ResponseEntity<Book> getBookByIsbn(@PathVariable String isbn) {
+        return bookRepository.findByIsbn(isbn)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book bookDetails) {
         return bookRepository.findById(id)
