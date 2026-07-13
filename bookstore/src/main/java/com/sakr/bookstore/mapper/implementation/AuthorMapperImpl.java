@@ -1,8 +1,9 @@
-package com.sakr.bookstore.mapper;
+package com.sakr.bookstore.mapper.implementation;
 
 import com.sakr.bookstore.dto.requests.AuthorRequest;
 import com.sakr.bookstore.dto.response.AuthorResponse;
 import com.sakr.bookstore.dto.response.AuthorSummaryResponse;
+import com.sakr.bookstore.mapper.AuthorMapper;
 import com.sakr.bookstore.model.Author;
 import org.springframework.stereotype.Component;
 

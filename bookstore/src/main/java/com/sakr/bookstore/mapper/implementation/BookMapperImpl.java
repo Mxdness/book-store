@@ -1,7 +1,9 @@
-package com.sakr.bookstore.mapper;
+package com.sakr.bookstore.mapper.implementation;
 
 import com.sakr.bookstore.dto.requests.BookRequest;
 import com.sakr.bookstore.dto.response.BookResponse;
+import com.sakr.bookstore.mapper.AuthorMapper;
+import com.sakr.bookstore.mapper.BookMapper;
 import com.sakr.bookstore.model.Author;
 import com.sakr.bookstore.model.Book;
 import lombok.RequiredArgsConstructor;
