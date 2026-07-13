@@ -1,10 +1,8 @@
 package com.sakr.bookstore.controller;
 
-import com.sakr.bookstore.exception.ResourceNotFoundException;
-import com.sakr.bookstore.model.Author;
-import com.sakr.bookstore.model.Book;
-import com.sakr.bookstore.repository.AuthorRepository;
-import com.sakr.bookstore.repository.BookRepository;
+import com.sakr.bookstore.dto.requests.BookRequest;
+import com.sakr.bookstore.dto.response.BookResponse;
+import com.sakr.bookstore.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,54 +24,31 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookController {
 
-    private final BookRepository bookRepository;
-    private final AuthorRepository authorRepository;
+    private final BookService bookService;
 
     @PostMapping
-    public ResponseEntity<Book> createBook(@Valid @RequestBody Book book) {
-
-        Long authorId = book.getAuthor().getId();
-
-        Author author = authorRepository.findById(authorId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Author not found with id: " + authorId));
-
-        book.setAuthor(author);
-
-        Book savedBook = bookRepository.save(book);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedBook);
-    }
+    public ResponseEntity<BookResponse> createBook(@Valid @RequestBody BookRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookService.createBook(request));
+   }
 
     @GetMapping
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public List<BookResponse> getAllBooks() {
+        return bookService.getAllBooks();
     }
 
     @GetMapping("/isbn/{isbn}")
-    public Book getBookByIsbn(@PathVariable String isbn) {
-        return bookRepository.findByIsbn(isbn)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found with ISBN: " + isbn));
+    public BookResponse getBookByIsbn(@PathVariable String isbn) {
+        return bookService.getBookByIsbn(isbn);
     }
 
     @PutMapping("/{id}")
-    public Book updateBook(@PathVariable Long id, @Valid @RequestBody Book bookDetails) {
-        Book existingBook = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
-
-        existingBook.setTitle(bookDetails.getTitle());
-        existingBook.setAuthor(bookDetails.getAuthor());
-        existingBook.setIsbn(bookDetails.getIsbn());
-        existingBook.setPrice(bookDetails.getPrice());
-
-        return bookRepository.save(existingBook);
-     }
+    public BookResponse updateBook(@PathVariable Long id, @Valid @RequestBody BookRequest request) {
+        return bookService.updateBook(id, request);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
-        Book existingBook = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
-        bookRepository.delete(existingBook);
+        bookService.deleteBook(id);
         return ResponseEntity.noContent().build();
     }
 }

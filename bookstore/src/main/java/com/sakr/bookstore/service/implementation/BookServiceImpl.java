@@ -11,11 +11,13 @@ import com.sakr.bookstore.repository.BookRepository;
 import com.sakr.bookstore.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
@@ -30,6 +32,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BookResponse> getAllBooks() {
         return bookRepository.findAll().stream()
                 .map(bookMapper::toResponse)
@@ -37,6 +40,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookResponse getBookByIsbn(String isbn) {
         Book book = bookRepository.findByIsbn(isbn)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with ISBN: " + isbn));

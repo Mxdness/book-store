@@ -1,8 +1,8 @@
 package com.sakr.bookstore.controller;
 
-import com.sakr.bookstore.exception.ResourceNotFoundException;
-import com.sakr.bookstore.model.Author;
-import com.sakr.bookstore.repository.AuthorRepository;
+import com.sakr.bookstore.dto.requests.AuthorRequest;
+import com.sakr.bookstore.dto.response.AuthorResponse;
+import com.sakr.bookstore.service.AuthorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,42 +23,31 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthorController {
 
-    private final AuthorRepository authorRepository;
+    private final AuthorService authorService;
 
    @PostMapping
-    public ResponseEntity<Author> createAuthor(@Valid @RequestBody Author author) {
-        Author savedAuthor = authorRepository.save(author);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedAuthor);
+    public ResponseEntity<AuthorResponse> createAuthor(@Valid @RequestBody AuthorRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authorService.createAuthor(request));
     }
 
     @GetMapping
-    public List<Author> getAllAuthors() {
-        return authorRepository.findAll();
+    public List<AuthorResponse> getAllAuthors() {
+        return authorService.getAllAuthors();
     }
 
     @GetMapping("/{id}")
-    public Author getAuthorById(@PathVariable Long id) {
-        return authorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + id));
+    public AuthorResponse getAuthorById(@PathVariable Long id) {
+        return authorService.getAuthorById(id);
     }
 
     @PutMapping("/{id}")
-    public Author updateAuthor(@PathVariable Long id, @Valid @RequestBody Author authorDetails) {
-        Author existingAuthor = authorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + id));
-
-        existingAuthor.setFirstName(authorDetails.getFirstName());
-        existingAuthor.setLastName(authorDetails.getLastName());
-        existingAuthor.setBiography(authorDetails.getBiography());
-
-        return authorRepository.save(existingAuthor);
+    public AuthorResponse updateAuthor(@PathVariable Long id, @Valid @RequestBody AuthorRequest request) {
+        return authorService.updateAuthor(id, request);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAuthor(@PathVariable Long id) {
-        Author existingAuthor = authorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + id));
-        authorRepository.delete(existingAuthor);
+        authorService.deleteAuthor(id);
         return ResponseEntity.noContent().build();
     }
 }
