@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  wso2apim:
+    image: wso2/wso2am:4.3.0
+    container_name: wso2apim
+    hostname: wso2apim
+
+    ports:
+      - "9443:9443"   # Management Console / Publisher / Dev Portal
+      - "8243:8243"   # HTTPS Gateway
+      - "8280:8280"   # HTTP Gateway
+      - "9763:9763"   # HTTP Management (optional)
+
+    environment:
+      JAVA_OPTS: "-Xms2g -Xmx2g"
+
+    volumes:
+      - apim-repository:/home/wso2carbon/wso2am-4.3.0/repository
+      - apim-solr:/home/wso2carbon/wso2am-4.3.0/solr
+
+    restart: unless-stopped
+
+volumes:
+  apim-repository:
+  apim-solr:
